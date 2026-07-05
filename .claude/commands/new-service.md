@@ -24,7 +24,7 @@ allowed-tools: Read, Write, Edit, Bash, Glob
 - `backend/<name>-service/` 가 이미 있으면 중단하고 사용자에게 알린다(덮어쓰기 금지).
 - **다음 빈 포트 산정:** `config-repo/*.yml` 의 `server.port` 를 모두 읽어(`Glob` + `Read`/`Grep`)
   191xx 중 가장 큰 값 + 1 을 쓴다. (현재 사용: platform 19159, gateway 19100, inventory 19101,
-  master 19102 → 신규는 보통 **19103** 부터.) 19159 는 platform 예약이니 건너뛴다.
+  master 19102, user 19103 → 신규는 보통 **19104** 부터.) 19159 는 platform 예약이니 건너뛴다.
 
 ### 1. `backend/<name>-service/build.gradle.kts` 생성
 아래 템플릿(inventory-service 와 동일한 JPA+Kafka+Redis+Flyway 조합). 주석의 도메인 설명만 `$1` 에 맞게.
@@ -62,15 +62,15 @@ dependencies {
 
     implementation("org.flywaydb:flyway-core")
     runtimeOnly("org.flywaydb:flyway-database-postgresql")
-    runtimeOnly("com.h2database:h2")
     runtimeOnly("org.postgresql:postgresql")
+    testRuntimeOnly("com.h2database:h2")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 }
 ```
 
-> JWT **발급**이 필요한 서비스라면(보통 불필요 — 발급은 master-service 단일 지점) master-service
+> JWT **발급**이 필요한 서비스라면(보통 불필요 — 발급은 user-service 단일 지점) user-service
 > build 처럼 `spring-security-crypto` + `jjwt.impl`/`jjwt.jackson` 런타임을 추가한다. 기본은 넣지 않는다.
 
 ### 2. `backend/<name>-service/src/main/kotlin/com/gijun/wms/<pkg>/<Pascal>ServiceApplication.kt`
@@ -83,7 +83,7 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.boot.runApplication
 
 /**
- * <$1> 피처 서비스. 헥사고날 + CQRS, DB-per-service(dev=H2, 운영=PostgreSQL, 스키마=Flyway).
+ * <$1> 피처 서비스. 헥사고날 + CQRS, DB-per-service(PostgreSQL, 스키마=Flyway).
  * gateway 가 검증한 X-User-* 헤더를 신뢰한다. 필요 시 stock.movement 를 발행/구독한다.
  */
 @ConfigurationPropertiesScan
@@ -112,14 +112,18 @@ server:
   port: <PORT>
 
 spring:
+  # DB-per-service — 값은 .env/배포 환경변수로 주입. fallback 없음: 정보가 없으면 부팅 실패가 맞다.
   datasource:
-    url: ${DB_URL:jdbc:h2:mem:wms_<pkg>;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE}
-    username: ${DB_USERNAME:sa}
-    password: ${DB_PASSWORD:}
+    url: ${<UPPER>_DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
   kafka:
     consumer:
       group-id: ${KAFKA_GROUP_<UPPER>:wms-<name>}
 ```
+
+생성 후 안내: 공유 Postgres 에 `wms_<pkg>` database 를 만들고, repo 루트 `.env` 와 `deploy/docker-compose.yml`
+의 해당 서비스 environment 에 `<UPPER>_DB_URL` 을 추가해야 부팅된다(.env.example 참고).
 
 ### 5. `backend/<name>-service/src/main/resources/db/migration/V1__init.sql` (Flyway 베이스라인)
 

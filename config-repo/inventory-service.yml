@@ -4,11 +4,11 @@ server:
   port: 19101
 
 spring:
-  # dev 기본 = H2(PostgreSQL 호환 모드). 운영은 DB_URL/DB_USERNAME/DB_PASSWORD 로 PostgreSQL 주입.
+  # DB-per-service — 값은 .env/배포 환경변수로 주입. fallback 없음: 정보가 없으면 부팅 실패가 맞다.
   datasource:
-    url: ${DB_URL:jdbc:h2:mem:wms_inventory;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE}
-    username: ${DB_USERNAME:sa}
-    password: ${DB_PASSWORD:}
+    url: ${INVENTORY_DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
   kafka:
     consumer:
       # 이동 커맨드/이벤트 consumer 그룹

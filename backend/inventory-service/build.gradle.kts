@@ -36,9 +36,9 @@ dependencies {
     implementation("org.flywaydb:flyway-core")
     runtimeOnly("org.flywaydb:flyway-database-postgresql")
 
-    // dev=H2(PostgreSQL 호환 모드), 운영=PostgreSQL.
-    runtimeOnly("com.h2database:h2")
+    // PostgreSQL(DB-per-service). H2 는 테스트 전용.
     runtimeOnly("org.postgresql:postgresql")
+    testRuntimeOnly("com.h2database:h2")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")

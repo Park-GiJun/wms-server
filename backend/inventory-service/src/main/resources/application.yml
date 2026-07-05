@@ -1,6 +1,6 @@
 # 실설정은 전부 platform-server(Config / config-repo)에서 가져온다 — 여기엔 식별자 + 주소만 둔다.
 # config 주소는 부트스트랩이라 환경변수로 분리: dev=localhost:19159(기본) / prod=CONFIG_SERVER_URL 주입.
-# datasource/redis/kafka 는 config-repo/inventory-service.yml 이 채운다(미기동 시 임베디드 H2 폴백).
+# datasource/redis/kafka 는 config-repo/inventory-service.yml 이 채운다(datasource 는 fallback 없음 — .env 필수).
 spring:
   application:
     name: inventory-service
