@@ -15,4 +15,7 @@ enum class ErrorCode(val status: HttpStatus, val defaultMessage: String) {
     // 가용 재고 부족(오버피킹/음수재고 차단). 재고원장 홀드 위반 시 매핑.
     INSUFFICIENT_STOCK(HttpStatus.UNPROCESSABLE_ENTITY, "가용 재고가 부족합니다."),
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류가 발생했습니다."),
+
+    // 유저 관련 예외
+    DUPLICATE_APP_USER_EMAIL(HttpStatus.CONFLICT, "이미 존재하는 이메일입니다."),
 }

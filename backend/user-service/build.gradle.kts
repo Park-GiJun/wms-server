@@ -29,6 +29,9 @@ dependencies {
     implementation(libs.kotlin.logging)
     implementation(project(":shared"))
 
+    // Swagger UI — dev 에서 http://localhost:19103/swagger-ui.html
+    implementation(libs.springdoc.webmvc.ui)
+
     // 비밀번호 해싱만 필요 — 풀 security 스타터 대신 crypto 모듈만 (필터 체인 없음).
     implementation("org.springframework.security:spring-security-crypto")
     // JWT 발급(서명)은 user(신원 소유) 책임. shared 는 api 만 노출하므로 impl/jackson 을 직접 런타임에 둔다.

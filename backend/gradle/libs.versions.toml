@@ -7,6 +7,8 @@ springCloud = "2025.1.0"
 jjwt = "0.12.6"
 kotlinLogging = "7.0.3"
 springDotenv = "5.1.0"
+# Spring Boot 4(Framework 7) 지원 라인은 3.x 부터.
+springdoc = "3.0.0"
 
 [libraries]
 # JWT (shared 검증기 + user-service 발급)
@@ -14,6 +16,8 @@ jjwt-api = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jjwt" }
 jjwt-impl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jjwt" }
 jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jjwt" }
 kotlin-logging = { module = "io.github.oshai:kotlin-logging-jvm", version.ref = "kotlinLogging" }
+# Swagger UI (springdoc) — API 를 노출하는 서비스에만 붙인다.
+springdoc-webmvc-ui = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc" }
 # 로컬 dev 에서 repo 루트 .env 를 Spring Environment 로 자동 주입(developmentOnly → 운영 jar 에는 미포함).
 springboot4-dotenv = { module = "me.paulschwarz:springboot4-dotenv", version.ref = "springDotenv" }
 # 코루틴 (버전은 Spring Boot BOM 이 관리).
