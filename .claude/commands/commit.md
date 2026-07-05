@@ -22,10 +22,10 @@ allowed-tools: Bash, Read, Write, Edit, Glob, Grep, Agent
 ```
 
 - `type`: `feat` / `fix` / `refactor` / `docs` / `chore` / `test` / `ci` 중 변경 성격에 맞는 것.
-- `scope`: 커밋 그룹의 모듈명. 예: `inventory-service`, `master-service`, `gateway`,
+- `scope`: 커밋 그룹의 모듈명. 예: `master-service`, `user-service`, `gateway`,
   `platform-server`, `shared`. 서비스가 아닌 그룹은 `config-repo` / `infra` / `deploy` /
   `docs` / `claude` 등 디렉토리 성격에 맞는 이름.
-- 예: `feat[inventory-service] : 재고 조정 커맨드 API 추가`
+- 예: `feat[master-service] : 재고 조정 커맨드 API 추가`
 - 본문 마지막 줄: `Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>`
 
 ## 절차 (순서대로)

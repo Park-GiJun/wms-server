@@ -1,6 +1,6 @@
 plugins {
-    // 품목·로케이션·거래처 마스터. 헥사고날 + CQRS, DB-per-service → JPA.
-    // 신원(user)/JWT 발급은 user-service 소유 — 여기 두지 않는다.
+    // ★척추: 재고원장(append-only)·stock.movement 발행 + 품목·로케이션·거래처 마스터.
+    // 헥사고날 + CQRS, DB-per-service → JPA. 신원(user)/JWT 발급은 user-service 소유 — 여기 두지 않는다.
     alias(libs.plugins.kotlin.spring)
     alias(libs.plugins.kotlin.jpa)
     alias(libs.plugins.springBoot)

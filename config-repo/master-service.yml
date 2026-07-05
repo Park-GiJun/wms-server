@@ -1,5 +1,7 @@
 # master-service 전용 설정 (공통 application.yml 위로 병합).
-# 품목·로케이션·거래처 마스터. DB-per-service. (신원/JWT 발급은 user-service 로 분리.)
+# ★척추 = 재고원장(append-only)·재고/로케이션 투영·stock.movement 발행
+# + 품목·로케이션·거래처 마스터(구 inventory-service 통합). DB-per-service.
+# (신원/JWT 발급은 user-service 로 분리.)
 server:
   port: 19102
 
@@ -12,3 +14,11 @@ spring:
   kafka:
     consumer:
       group-id: ${KAFKA_GROUP_MASTER:wms-master}
+
+# 재고/이동 규칙 (가정값). 도메인 설계에 맞게 채운다.
+inventory:
+  # stock.movement 토픽(발행) — key="{itemId}:{locationId}" 로 (품목,로케이션) 단위 순서보장.
+  topic:
+    stock-movement: ${TOPIC_STOCK_MOVEMENT:stock.movement}
+  # 음수재고 차단(오버피킹 방지). 조정(ADJUSTMENT)만 예외 허용.
+  allow-negative: false

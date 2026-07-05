@@ -8,7 +8,7 @@ allowed-tools: Read, Write, Edit, Bash, Glob
 
 `wms-server` 컨벤션에 맞춰 새 MSA 피처 서비스 모듈 하나를 **도메인 코드 없이 골격만** 생성한다.
 서비스는 게이트웨이를 통해 인증된 `X-User-*` 헤더를 신뢰하고, 필요 시 `stock.movement`(척추 이벤트)를
-발행/구독하는 피처다. **척추(inventory-service)는 절대 수정하지 않는다.**
+발행/구독하는 피처다. **척추(master-service)는 절대 수정하지 않는다.**
 
 ## 입력
 
@@ -23,11 +23,11 @@ allowed-tools: Read, Write, Edit, Bash, Glob
 ### 0. 사전 점검
 - `backend/<name>-service/` 가 이미 있으면 중단하고 사용자에게 알린다(덮어쓰기 금지).
 - **다음 빈 포트 산정:** `config-repo/*.yml` 의 `server.port` 를 모두 읽어(`Glob` + `Read`/`Grep`)
-  191xx 중 가장 큰 값 + 1 을 쓴다. (현재 사용: platform 19159, gateway 19100, inventory 19101,
-  master 19102, user 19103 → 신규는 보통 **19104** 부터.) 19159 는 platform 예약이니 건너뛴다.
+  191xx 중 가장 큰 값 + 1 을 쓴다. (현재 사용: platform 19159, gateway 19100, master 19102,
+  user 19103 → 신규는 보통 **19104** 부터.) 19159 는 platform 예약이니 건너뛴다.
 
 ### 1. `backend/<name>-service/build.gradle.kts` 생성
-아래 템플릿(inventory-service 와 동일한 JPA+Kafka+Redis+Flyway 조합). 주석의 도메인 설명만 `$1` 에 맞게.
+아래 템플릿(master-service 와 동일한 JPA+Kafka+Redis+Flyway 조합). 주석의 도메인 설명만 `$1` 에 맞게.
 
 ```kotlin
 plugins {
@@ -154,4 +154,4 @@ include("<name>-service")
 - 도메인 코드(entity/handler/adapter)는 사용자가 채운다 — 이 커맨드는 골격까지만.
 
 **주의:** 도메인 로직·엔티티·컨트롤러는 만들지 않는다. 위 8단계 파일/등록만 생성하고, 기존 모듈
-(특히 inventory-service 척추)은 수정하지 않는다.
+(특히 master-service 척추)은 수정하지 않는다.

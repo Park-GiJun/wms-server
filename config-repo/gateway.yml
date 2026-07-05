@@ -20,16 +20,11 @@ spring:
               uri: lb://user-service
               predicates:
                 - Path=/api/users/**
-            # 품목/로케이션/거래처 마스터 → master-service
+            # 재고 조회 · 재고이동(척추) + 품목/로케이션/거래처 마스터 → master-service
             - id: master-core
               uri: lb://master-service
               predicates:
-                - Path=/api/items/**,/api/locations/**,/api/partners/**
-            # 재고 조회 · 재고이동(척추) → inventory-service
-            - id: inventory-core
-              uri: lb://inventory-service
-              predicates:
-                - Path=/api/inventory/**,/api/stock-movements/**
+                - Path=/api/inventory/**,/api/stock-movements/**,/api/items/**,/api/locations/**,/api/partners/**
             # ── 피처 추가 시 /new-service 가 여기에 라우트를 덧붙인다 ──
             # - id: inbound-core
             #   uri: lb://inbound-service

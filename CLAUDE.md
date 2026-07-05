@@ -21,7 +21,7 @@ WMS 의 모든 물리 이동(입고·적치·이동·피킹·패킹·출고·조
 라이터 매칭엔진(`Order → Trade`)과 동형이다.
 
 > **확장 규칙: 새 기능 = `stock.movement` 를 발행(커맨드)하거나 구독(투영)하는 피처 서비스 추가.**
-> 척추(`inventory-service`)는 건드리지 않는다. 새 피처는 **`/new-service <name>`** 로 스캐폴드한다.
+> 척추(`master-service`)는 건드리지 않는다. 새 피처는 **`/new-service <name>`** 로 스캐폴드한다.
 
 ## 모노레포 구조
 
@@ -42,7 +42,7 @@ wms-server/
 무중단 교체한다(레지스트리 없음 — 빌드=배포 동일 호스트). 새 피처를 추가하면 `settings.kts` 의
 `backendServices` 목록에도 한 줄 넣는다. 배포 시크릿은 서버의 `deploy/.env`(미추적)로 주입하고,
 공유 인프라(`infra-postgres`/`infra-redis`/`kafka`, 네트워크 `infra-net`)와
-`wms_master`/`wms_inventory`/`wms_user` DB 는 미리 존재해야 한다.
+`wms_master`/`wms_user` DB 는 미리 존재해야 한다.
 
 ## 백엔드 모듈 (포트 대역 191xx)
 
@@ -54,8 +54,7 @@ wms-server/
 | `platform-server`   | 19159 | Config(native) + Eureka 통합 한 JVM. 자기 등록 안 함. 가장 먼저 기동                 | O  |
 | `gateway`           | 19100 | 유일한 외부 진입점 + 단일 인증 지점(JWT 검증) + 라우팅                                   | O  |
 | `shared`            | —     | 실행 불가 `java-library`. JwtTokenValidator·공통 응답/예외·`StockMovementEvent` | —  |
-| `inventory-service` | 19101 | **★척추.** 재고원장(append-only)·재고/로케이션 투영·`stock.movement` 발행             | O  |
-| `master-service`    | 19102 | 품목·로케이션·거래처 마스터                                                         | O  |
+| `master-service`    | 19102 | **★척추.** 재고원장(append-only)·`stock.movement` 발행 + 품목·로케이션·거래처 마스터      | O  |
 | `user-service`      | 19103 | 신원(user) 마스터 + **JWT 발급**                                              | O  |
 
 모든 모듈은 패키지 루트 `com.gijun.wms` 를 공유한다(모듈이 달라도 같은 베이스 패키지).
@@ -94,7 +93,7 @@ infrastructure/
 
 - **CQRS**: 명령은 `@Transactional`, 조회는 `@Transactional(readOnly = true)`.
 - **`port.out` 은 기술 관심사(persistence/message/cache/token/security)로** 나눈다(읽기/쓰기 아님).
-- **`inventory-service` 예외:** 재고원장 단일 라이터 코어는 성능·정합성상 domain 안에 두고,
+- **`master-service`(척추) 예외:** 재고원장 단일 라이터 코어는 성능·정합성상 domain 안에 두고,
   입력(이동 커맨드)·출력(`stock.movement` 발행)만 port 로 추상화한다.
 
 ## 빌드 & 실행 명령
@@ -105,9 +104,8 @@ infrastructure/
 .\gradlew.bat build                          # 전체 빌드
 .\gradlew.bat :platform-server:bootRun        # 1. Config+Eureka (가장 먼저)
 .\gradlew.bat :gateway:bootRun                # 2.
-.\gradlew.bat :master-service:bootRun         # 3.
+.\gradlew.bat :master-service:bootRun         # 3. 척추(재고원장+마스터)
 .\gradlew.bat :user-service:bootRun           # 4. 신원/JWT 발급
-.\gradlew.bat :inventory-service:bootRun      # 5. 척추
 .\gradlew.bat test
 ```
 
