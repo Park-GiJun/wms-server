@@ -16,6 +16,7 @@ import com.gijun.wms.user.application.port.out.security.PasswordHasherPort
 import com.gijun.wms.user.application.port.out.token.TokenIssuerPort
 import com.gijun.wms.user.domain.appUser.AppUserModel
 import com.gijun.wms.user.domain.appUser.exception.AppUserException
+import com.gijun.wms.user.domain.appUser.service.PasswordPolicy
 import com.gijun.wms.user.domain.enums.AppUserStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -47,9 +48,10 @@ class AppUserCommandHandler(
         )
     }
 
-    /** register — 이메일 중복 검증 후 PENDING 으로 저장. */
+    /** register — 비밀번호 정책·이메일 중복 검증 후 PENDING 으로 저장. */
     @Transactional
     override fun register(command: RegisterAppUserCommand): AppUserResult {
+        PasswordPolicy.validate(command.password)
         if (appUserQueryPersistencePort.existsByEmail(command.email)) {
             throw AppUserException.DuplicateUserException(command.email)
         }

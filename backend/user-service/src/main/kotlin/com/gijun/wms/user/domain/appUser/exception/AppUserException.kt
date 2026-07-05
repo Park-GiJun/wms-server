@@ -25,6 +25,10 @@ sealed class AppUserException(
     class NotPendingException(userId: Long?, status: AppUserStatus) :
         AppUserException(ErrorCode.CONFLICT, "승인 대기 상태가 아닙니다: id=$userId, status=$status")
 
+    /** 비밀번호 정책 위반 — 400. */
+    class WeakPasswordException(reason: String) :
+        AppUserException(ErrorCode.INVALID_INPUT, "비밀번호 정책 위반: $reason")
+
     /** 로그인 실패 — 계정 존재 여부를 숨기기 위해 이메일/비밀번호를 구분하지 않는다. 401. */
     class InvalidCredentialsException :
         AppUserException(ErrorCode.UNAUTHORIZED, "이메일 또는 비밀번호가 올바르지 않습니다.")
