@@ -35,7 +35,8 @@ spring:
   # JPA 공통 — JPA 를 안 쓰는 모듈(gateway)에서는 무시된다.
   jpa:
     hibernate:
-      ddl-auto: ${JPA_DDL_AUTO:update}
+      # 스키마 버전관리는 Flyway 단일 창구 — Hibernate 는 검증만 하고 절대 스키마를 만지지 않는다.
+      ddl-auto: validate
     open-in-view: false
     properties:
       hibernate:

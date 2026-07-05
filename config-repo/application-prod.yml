@@ -11,7 +11,4 @@ spring:
   data:
     redis:
       host: ${REDIS_HOST:210.121.177.150}
-  # 운영은 PostgreSQL. 스키마는 Flyway 로 잡고 ddl-auto 는 validate 로 내린다.
-  jpa:
-    hibernate:
-      ddl-auto: ${JPA_DDL_AUTO:validate}
+  # jpa.ddl-auto 오버라이드 없음 — 공통 application.yml 에서 validate 고정(스키마는 Flyway 단일 창구).
