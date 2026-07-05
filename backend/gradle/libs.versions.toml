@@ -1,5 +1,6 @@
 [versions]
-kotlin = "2.2.20"
+# 2.4.0 은 Spring Boot 4.0 과 궁합이 아직 애매 — JDK 25 를 지원하는 2.3.0 에 고정.
+kotlin = "2.3.0"
 springBoot = "4.0.0"
 springDependencyManagement = "1.1.7"
 springCloud = "2025.1.0"
@@ -8,7 +9,7 @@ kotlinLogging = "7.0.3"
 springDotenv = "5.1.0"
 
 [libraries]
-# JWT (shared 검증기 + master-service 발급)
+# JWT (shared 검증기 + user-service 발급)
 jjwt-api = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jjwt" }
 jjwt-impl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jjwt" }
 jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jjwt" }

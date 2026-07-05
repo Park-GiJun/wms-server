@@ -29,17 +29,14 @@ subprojects {
         }
     }
 
-    // Kotlin 이 아직 JVM_25 바이트코드를 못 내므로(2.2.x → 24 폴백) Java 바이트코드도 24 로 맞춰
-    // compileJava/compileKotlin 타깃 일관성을 확보한다. JDK 25 툴체인으로 컴파일하되 타깃만 24.
+    // Kotlin 2.3.0 부터 JVM_25 바이트코드 타깃 지원 → Java/Kotlin 모두 25 로 통일.
     tasks.withType<JavaCompile>().configureEach {
-        options.release.set(24)
+        options.release.set(25)
     }
 
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
         compilerOptions {
-            // 빌드/실행은 JDK 25 툴체인에서 한다. 단 Kotlin 2.2.x 는 아직 JVM_25 바이트코드 타깃을
-            // 내지 못하고 JVM_24 로 폴백한다(2.3.0 부터 JVM_25 지원) → 명시적으로 24 로 고정.
-            jvmTarget.set(JvmTarget.JVM_24)
+            jvmTarget.set(JvmTarget.JVM_25)
             freeCompilerArgs.add("-Xjsr305=strict") // Spring nullability 메타데이터 엄격 적용
         }
     }
