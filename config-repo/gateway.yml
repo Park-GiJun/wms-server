@@ -25,6 +25,11 @@ spring:
               uri: lb://master-service
               predicates:
                 - Path=/api/inventory/**,/api/stock-movements/**,/api/items/**,/api/locations/**,/api/partners/**
+            # 알림 → notification-service
+            - id: notification-core
+              uri: lb://notification-service
+              predicates:
+                - Path=/api/notifications/**
             # ── 피처 추가 시 /new-service 가 여기에 라우트를 덧붙인다 ──
             # - id: inbound-core
             #   uri: lb://inbound-service

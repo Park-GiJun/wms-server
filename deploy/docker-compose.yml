@@ -4,7 +4,7 @@
 # 서비스 1개만 교체:  docker compose -f deploy/docker-compose.yml up -d --no-deps <service>
 #
 # 전제: 공유 인프라(infra-postgres/infra-redis/kafka, 네트워크 infra-net)가 미리 떠 있어야 한다.
-#       공유 PostgreSQL 에 wms_master / wms_user database 가 있어야 한다(DB-per-service).
+#       공유 PostgreSQL 에 wms_master / wms_user / wms_notification database 가 있어야 한다(DB-per-service).
 name: wms
 
 x-backend-build: &backend-build
@@ -71,6 +71,23 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       JWT_ISSUER: ${JWT_ISSUER:-wms}
       JWT_VALIDITY_MINUTES: ${JWT_VALIDITY_MINUTES:-1440}
+    networks: [wms-net, infra-net]
+    depends_on: [platform-server]
+    restart: unless-stopped
+
+  # ── 알림 (stock.movement 등 이벤트 구독 · PostgreSQL · Kafka · Redis) ──
+  notification-service:
+    build: { <<: *backend-build, args: { MODULE: notification-service } }
+    image: wms-notification-service
+    environment:
+      CONFIG_SERVER_URL: http://platform-server:19159
+      EUREKA_URL: http://platform-server:19159/eureka/
+      NOTIFICATION_DB_URL: jdbc:postgresql://infra-postgres:5432/wms_notification
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      REDIS_HOST: infra-redis
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
     networks: [wms-net, infra-net]
     depends_on: [platform-server]
     restart: unless-stopped

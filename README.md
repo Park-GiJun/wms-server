@@ -18,6 +18,7 @@ WMS 의 모든 물리 이동(입고·적치·이동·피킹·패킹·출고·조
 | `shared`            | —     | 실행 불가 `java-library`. JWT 검증기·공통 응답/예외·`StockMovementEvent` | —  |
 | `master-service`    | 19102 | **★척추.** 재고원장·`stock.movement` 발행 + 품목·로케이션·거래처 마스터           | O  |
 | `user-service`      | 19103 | 신원(user) 마스터 + **JWT 발급**                                    | O  |
+| `notification-service` | 19104 | 알림 — `stock.movement` 등 이벤트 구독                             | O  |
 
 추가 피처(`inbound` / `outbound` / `cycle-count` …)는 **`/new-service <name>`** 로 붙인다.
 

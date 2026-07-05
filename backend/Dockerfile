@@ -15,6 +15,7 @@ COPY platform-server/build.gradle.kts ./platform-server/
 COPY gateway/build.gradle.kts ./gateway/
 COPY master-service/build.gradle.kts ./master-service/
 COPY user-service/build.gradle.kts ./user-service/
+COPY notification-service/build.gradle.kts ./notification-service/
 RUN chmod +x gradlew
 
 # 소스 복사 후 지정 모듈만 bootJar

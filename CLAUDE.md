@@ -56,6 +56,7 @@ wms-server/
 | `shared`            | —     | 실행 불가 `java-library`. JwtTokenValidator·공통 응답/예외·`StockMovementEvent` | —  |
 | `master-service`    | 19102 | **★척추.** 재고원장(append-only)·`stock.movement` 발행 + 품목·로케이션·거래처 마스터      | O  |
 | `user-service`      | 19103 | 신원(user) 마스터 + **JWT 발급**                                              | O  |
+| `notification-service` | 19104 | 알림 — `stock.movement` 등 이벤트 구독                                       | O  |
 
 모든 모듈은 패키지 루트 `com.gijun.wms` 를 공유한다(모듈이 달라도 같은 베이스 패키지).
 추가 피처(`inbound-service` / `outbound-service` …)는 `/new-service` 로 191xx 다음 포트에 붙인다.
