@@ -22,7 +22,7 @@ allowed-tools: Bash, Read, Write, Edit, Glob, Grep, Agent
 ```
 
 - `type`: `feat` / `fix` / `refactor` / `docs` / `chore` / `test` / `ci` 중 변경 성격에 맞는 것.
-- `scope`: 커밋 그룹의 모듈명. 예: `master-service`, `user-service`, `gateway`,
+- `scope`: 커밋 그룹의 모듈명. 예: `master-service`, `notification-service`, `gateway`,
   `platform-server`, `shared`. 서비스가 아닌 그룹은 `config-repo` / `infra` / `deploy` /
   `docs` / `claude` 등 디렉토리 성격에 맞는 이름.
 - 예: `feat[master-service] : 재고 조정 커맨드 API 추가`

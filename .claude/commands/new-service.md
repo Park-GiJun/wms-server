@@ -24,7 +24,7 @@ allowed-tools: Read, Write, Edit, Bash, Glob
 - `backend/<name>-service/` 가 이미 있으면 중단하고 사용자에게 알린다(덮어쓰기 금지).
 - **다음 빈 포트 산정:** `config-repo/*.yml` 의 `server.port` 를 모두 읽어(`Glob` + `Read`/`Grep`)
   191xx 중 가장 큰 값 + 1 을 쓴다. (현재 사용: platform 19159, gateway 19100, master 19102,
-  user 19103 → 신규는 보통 **19104** 부터.) 19159 는 platform 예약이니 건너뛴다.
+  notification 19104 → 신규는 보통 **19105** 부터.) 19159 는 platform 예약이니 건너뛴다.
 
 ### 1. `backend/<name>-service/build.gradle.kts` 생성
 아래 템플릿(master-service 와 동일한 JPA+Kafka+Redis+Flyway 조합). 주석의 도메인 설명만 `$1` 에 맞게.
@@ -70,7 +70,7 @@ dependencies {
 }
 ```
 
-> JWT **발급**이 필요한 서비스라면(보통 불필요 — 발급은 user-service 단일 지점) user-service
+> JWT **발급**이 필요한 서비스라면(보통 불필요 — 발급은 master-service 단일 지점) master-service
 > build 처럼 `spring-security-crypto` + `jjwt.impl`/`jjwt.jackson` 런타임을 추가한다. 기본은 넣지 않는다.
 
 ### 2. `backend/<name>-service/src/main/kotlin/com/gijun/wms/<pkg>/<Pascal>ServiceApplication.kt`

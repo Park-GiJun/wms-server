@@ -16,8 +16,7 @@ WMS 의 모든 물리 이동(입고·적치·이동·피킹·패킹·출고·조
 | `platform-server`   | 19159 | Config(native) + Eureka 통합 한 JVM. 가장 먼저 기동                  | O  |
 | `gateway`           | 19100 | 유일한 외부 진입점 + 단일 인증 지점(JWT 검증)                               | O  |
 | `shared`            | —     | 실행 불가 `java-library`. JWT 검증기·공통 응답/예외·`StockMovementEvent` | —  |
-| `master-service`    | 19102 | **★척추.** 재고원장·`stock.movement` 발행 + 품목·로케이션·거래처 마스터           | O  |
-| `user-service`      | 19103 | 신원(user) 마스터 + **JWT 발급**                                    | O  |
+| `master-service`    | 19102 | **★척추.** 재고원장·`stock.movement` 발행 + 품목·로케이션·거래처·신원(user) 마스터 + **JWT 발급** | O  |
 | `notification-service` | 19104 | 알림 — `stock.movement` 등 이벤트 구독                             | O  |
 
 추가 피처(`inbound` / `outbound` / `cycle-count` …)는 **`/new-service <name>`** 로 붙인다.
@@ -28,8 +27,7 @@ WMS 의 모든 물리 이동(입고·적치·이동·피킹·패킹·출고·조
 cd backend
 .\gradlew.bat :platform-server:bootRun   # 1. Config+Eureka (가장 먼저)
 .\gradlew.bat :gateway:bootRun           # 2. 게이트웨이
-.\gradlew.bat :master-service:bootRun    # 3. 척추(재고원장+마스터)
-.\gradlew.bat :user-service:bootRun      # 4. 신원/인증 (JWT 발급)
+.\gradlew.bat :master-service:bootRun    # 3. 척추(재고원장+마스터+신원/JWT 발급)
 ```
 
 인프라(Postgres/Redis/Kafka)는 홈서버 공유 인스턴스를 쓴다 — repo 루트 `.env`(미추적, `.env.example`

@@ -24,7 +24,6 @@ project {
         "platform-server",
         "gateway",
         "master-service",
-        "user-service",
         "notification-service",
     )
 

@@ -14,7 +14,6 @@ COPY shared/build.gradle.kts ./shared/
 COPY platform-server/build.gradle.kts ./platform-server/
 COPY gateway/build.gradle.kts ./gateway/
 COPY master-service/build.gradle.kts ./master-service/
-COPY user-service/build.gradle.kts ./user-service/
 COPY notification-service/build.gradle.kts ./notification-service/
 RUN chmod +x gradlew
 

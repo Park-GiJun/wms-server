@@ -42,7 +42,7 @@ wms-server/
 무중단 교체한다(레지스트리 없음 — 빌드=배포 동일 호스트). 새 피처를 추가하면 `settings.kts` 의
 `backendServices` 목록에도 한 줄 넣는다. 배포 시크릿은 서버의 `deploy/.env`(미추적)로 주입하고,
 공유 인프라(`infra-postgres`/`infra-redis`/`kafka`, 네트워크 `infra-net`)와
-`wms_master`/`wms_user` DB 는 미리 존재해야 한다.
+`wms_master`/`wms_notification` DB 는 미리 존재해야 한다.
 
 ## 백엔드 모듈 (포트 대역 191xx)
 
@@ -54,8 +54,7 @@ wms-server/
 | `platform-server`   | 19159 | Config(native) + Eureka 통합 한 JVM. 자기 등록 안 함. 가장 먼저 기동                 | O  |
 | `gateway`           | 19100 | 유일한 외부 진입점 + 단일 인증 지점(JWT 검증) + 라우팅                                   | O  |
 | `shared`            | —     | 실행 불가 `java-library`. JwtTokenValidator·공통 응답/예외·`StockMovementEvent` | —  |
-| `master-service`    | 19102 | **★척추.** 재고원장(append-only)·`stock.movement` 발행 + 품목·로케이션·거래처 마스터      | O  |
-| `user-service`      | 19103 | 신원(user) 마스터 + **JWT 발급**                                              | O  |
+| `master-service`    | 19102 | **★척추.** 재고원장(append-only)·`stock.movement` 발행 + 품목·로케이션·거래처·신원(user) 마스터 + **JWT 발급** | O  |
 | `notification-service` | 19104 | 알림 — `stock.movement` 등 이벤트 구독                                       | O  |
 
 모든 모듈은 패키지 루트 `com.gijun.wms` 를 공유한다(모듈이 달라도 같은 베이스 패키지).
@@ -63,7 +62,7 @@ wms-server/
 
 ## 인증 아키텍처 (JWT)
 
-JWT **발급은 user-service**(신원 마스터 소유), **검증은 gateway**. 양쪽은 `shared` 의
+JWT **발급은 master-service**(신원 마스터 소유), **검증은 gateway**. 양쪽은 `shared` 의
 `JwtTokenValidator` 와 동일한 `jwt.secret`/`jwt.issuer` 를 공유한다.
 
 1. `gateway` 가 모든 요청의 `Authorization: Bearer` 를 검증한다.
@@ -72,7 +71,7 @@ JWT **발급은 user-service**(신원 마스터 소유), **검증은 gateway**. 
 3. 공개 경로(`/api/auth/**`, `/actuator/**`)는 인증 없이 통과한다.
 4. 백엔드 서비스는 게이트웨이가 보장한 `X-User-*` 헤더를 신뢰한다.
 
-JWT secret/issuer 변경 시 **gateway 와 user-service 의 설정을 함께** 수정한다.
+JWT secret/issuer 변경 시 **gateway 와 master-service 의 설정을 함께** 수정한다.
 
 ## 서비스 내부 구조 (헥사고날 + CQRS)
 
@@ -105,8 +104,7 @@ infrastructure/
 .\gradlew.bat build                          # 전체 빌드
 .\gradlew.bat :platform-server:bootRun        # 1. Config+Eureka (가장 먼저)
 .\gradlew.bat :gateway:bootRun                # 2.
-.\gradlew.bat :master-service:bootRun         # 3. 척추(재고원장+마스터)
-.\gradlew.bat :user-service:bootRun           # 4. 신원/JWT 발급
+.\gradlew.bat :master-service:bootRun         # 3. 척추(재고원장+마스터+신원/JWT 발급)
 .\gradlew.bat test
 ```
 

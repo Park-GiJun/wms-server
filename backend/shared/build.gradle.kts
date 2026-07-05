@@ -18,7 +18,7 @@ dependencies {
     api("org.springframework:spring-web")
     api("com.fasterxml.jackson.module:jackson-module-kotlin")
 
-    // JWT 검증기 (gateway·user-service 가 동일 secret/issuer 로 공유)
+    // JWT 검증기 (gateway·master-service 가 동일 secret/issuer 로 공유)
     api(libs.jjwt.api)
     runtimeOnly(libs.jjwt.impl)
     runtimeOnly(libs.jjwt.jackson)

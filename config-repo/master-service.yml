@@ -1,7 +1,7 @@
 # master-service 전용 설정 (공통 application.yml 위로 병합).
 # ★척추 = 재고원장(append-only)·재고/로케이션 투영·stock.movement 발행
-# + 품목·로케이션·거래처 마스터(구 inventory-service 통합). DB-per-service.
-# (신원/JWT 발급은 user-service 로 분리.)
+# + 품목·로케이션·거래처 마스터(구 inventory-service 통합)
+# + 신원(user) 마스터·JWT 발급(구 user-service 통합). DB-per-service.
 server:
   port: 19102
 
@@ -14,6 +14,10 @@ spring:
   kafka:
     consumer:
       group-id: ${KAFKA_GROUP_MASTER:wms-master}
+
+# 발급 토큰 유효시간(신원 마스터 소유자 = 발급자). secret/issuer 는 공통 application.yml 참조.
+jwt:
+  access-token-validity-minutes: ${JWT_VALIDITY_MINUTES:1440}
 
 # 재고/이동 규칙 (가정값). 도메인 설계에 맞게 채운다.
 inventory:

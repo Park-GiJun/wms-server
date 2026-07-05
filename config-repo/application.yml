@@ -13,7 +13,7 @@ eureka:
     service-url:
       defaultZone: ${EUREKA_URL:http://localhost:19159/eureka/}
 
-# JWT — 발급(user-service)·검증(gateway)이 동일 값을 공유해야 한다. 값은 환경변수로 주입.
+# JWT — 발급(master-service)·검증(gateway)이 동일 값을 공유해야 한다. 값은 환경변수로 주입.
 # secret 은 fallback 없음: 없으면 부팅 실패가 맞다(가짜 기본값으로 조용히 뜨는 것 금지).
 jwt:
   secret: ${JWT_SECRET}

@@ -6,8 +6,8 @@ import io.jsonwebtoken.security.Keys
 import javax.crypto.SecretKey
 
 /**
- * JWT 서명·issuer 검증기. **발급은 user-service, 검증은 gateway** 가 하지만 둘은 동일한
- * secret/issuer 를 공유하므로 검증 로직을 shared 에 둔다(발급 책임은 user 의 토큰 어댑터).
+ * JWT 서명·issuer 검증기. **발급은 master-service(신원 마스터 소유), 검증은 gateway** 가 하지만 둘은
+ * 동일한 secret/issuer 를 공유하므로 검증 로직을 shared 에 둔다(발급 책임은 master 의 토큰 어댑터).
  */
 class JwtTokenValidator(
     secret: String,

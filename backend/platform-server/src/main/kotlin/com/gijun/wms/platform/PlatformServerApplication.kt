@@ -13,7 +13,7 @@ import org.springframework.cloud.netflix.eureka.server.EnableEurekaServer
  * - Eureka: 단일 노드 레지스트리. 자기 자신은 등록/페치하지 않는다.
  *
  * 자기 자신은 config 를 import 하지 않고(부트스트랩 순환 방지) 본인 application.yml 만 읽는다.
- * 기동 순서: **platform-server → gateway → master-service → user-service → (추가 피처)**.
+ * 기동 순서: **platform-server → gateway → master-service → (추가 피처)**.
  */
 @EnableConfigServer
 @EnableEurekaServer

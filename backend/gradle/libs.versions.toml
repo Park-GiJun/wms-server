@@ -11,7 +11,7 @@ springDotenv = "5.1.0"
 springdoc = "3.0.0"
 
 [libraries]
-# JWT (shared 검증기 + user-service 발급)
+# JWT (shared 검증기 + master-service 발급)
 jjwt-api = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jjwt" }
 jjwt-impl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jjwt" }
 jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jjwt" }

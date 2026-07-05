@@ -1,10 +1,10 @@
 # wms-server 배포 (홈서버 — 공유 infra-net 위에 wms 서비스만 올린다). 백엔드 전용(web 없음).
-# 내부 서비스(platform/master/user)는 wms-net 전용, gateway 만 호스트 노출.
+# 내부 서비스(platform/master/notification)는 wms-net 전용, gateway 만 호스트 노출.
 # 실행:  docker compose -f deploy/docker-compose.yml --env-file deploy/.env up -d
 # 서비스 1개만 교체:  docker compose -f deploy/docker-compose.yml up -d --no-deps <service>
 #
 # 전제: 공유 인프라(infra-postgres/infra-redis/kafka, 네트워크 infra-net)가 미리 떠 있어야 한다.
-#       공유 PostgreSQL 에 wms_master / wms_user / wms_notification database 가 있어야 한다(DB-per-service).
+#       공유 PostgreSQL 에 wms_master / wms_notification database 가 있어야 한다(DB-per-service).
 name: wms
 
 x-backend-build: &backend-build
@@ -38,7 +38,7 @@ services:
     depends_on: [platform-server]
     restart: unless-stopped
 
-  # ── ★척추: 재고원장 + 품목/로케이션/거래처 마스터 (stock.movement 발행 · PostgreSQL · Kafka · Redis) ──
+  # ── ★척추: 재고원장 + 품목/로케이션/거래처·신원(user) 마스터 + JWT 발급 (stock.movement 발행 · PostgreSQL · Kafka · Redis) ──
   master-service:
     build: { <<: *backend-build, args: { MODULE: master-service } }
     image: wms-master-service
@@ -46,23 +46,6 @@ services:
       CONFIG_SERVER_URL: http://platform-server:19159
       EUREKA_URL: http://platform-server:19159/eureka/
       MASTER_DB_URL: jdbc:postgresql://infra-postgres:5432/wms_master
-      DB_USERNAME: ${DB_USERNAME}
-      DB_PASSWORD: ${DB_PASSWORD}
-      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-      REDIS_HOST: infra-redis
-      REDIS_PASSWORD: ${REDIS_PASSWORD}
-    networks: [wms-net, infra-net]
-    depends_on: [platform-server]
-    restart: unless-stopped
-
-  # ── 신원·인증 (user 마스터 · JWT 발급 · PostgreSQL · Kafka · Redis) ──
-  user-service:
-    build: { <<: *backend-build, args: { MODULE: user-service } }
-    image: wms-user-service
-    environment:
-      CONFIG_SERVER_URL: http://platform-server:19159
-      EUREKA_URL: http://platform-server:19159/eureka/
-      USER_DB_URL: jdbc:postgresql://infra-postgres:5432/wms_user
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092

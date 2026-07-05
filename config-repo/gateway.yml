@@ -11,15 +11,11 @@ spring:
             locator:
               enabled: false
           routes:
-            # 인증(JWT 발급) · 신원(user) 마스터 → user-service
-            - id: user-auth
-              uri: lb://user-service
+            # 인증(JWT 발급) · 신원(user) 마스터 → master-service (구 user-service 통합)
+            - id: master-auth
+              uri: lb://master-service
               predicates:
-                - Path=/api/auth/**
-            - id: user-core
-              uri: lb://user-service
-              predicates:
-                - Path=/api/users/**
+                - Path=/api/auth/**,/api/users/**
             # 재고 조회 · 재고이동(척추) + 품목/로케이션/거래처 마스터 → master-service
             - id: master-core
               uri: lb://master-service
