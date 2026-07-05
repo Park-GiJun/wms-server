@@ -1,0 +1,17 @@
+# prod 오버라이드 (SPRING_PROFILES_ACTIVE=prod 일 때 공통 application.yml 위로 병합).
+# 홈서버 IP 는 deploy/.env 로 주입하는 것을 권장 — 여기 기본값은 fallback.
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://210.121.177.150:19159/eureka/}
+
+spring:
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:210.121.177.150:9092}
+  data:
+    redis:
+      host: ${REDIS_HOST:210.121.177.150}
+  # 운영은 PostgreSQL. 스키마는 Flyway 로 잡고 ddl-auto 는 validate 로 내린다.
+  jpa:
+    hibernate:
+      ddl-auto: ${JPA_DDL_AUTO:validate}

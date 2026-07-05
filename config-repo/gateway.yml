@@ -1,0 +1,39 @@
+# gateway 전용 설정 (공통 application.yml 위로 병합). 유일한 외부 진입점 + 단일 인증 지점.
+server:
+  port: 19100
+
+spring:
+  cloud:
+    gateway:
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: false
+          routes:
+            # 인증(JWT 발급) · 품목/로케이션/거래처 마스터 → master-service
+            - id: master-auth
+              uri: lb://master-service
+              predicates:
+                - Path=/api/auth/**
+            - id: master-core
+              uri: lb://master-service
+              predicates:
+                - Path=/api/items/**,/api/locations/**,/api/partners/**
+            # 재고 조회 · 재고이동(척추) → inventory-service
+            - id: inventory-core
+              uri: lb://inventory-service
+              predicates:
+                - Path=/api/inventory/**,/api/stock-movements/**
+            # ── 피처 추가 시 /new-service 가 여기에 라우트를 덧붙인다 ──
+            # - id: inbound-core
+            #   uri: lb://inbound-service
+            #   predicates:
+            #     - Path=/api/inbound/**
+
+# gateway 는 actuator 에 gateway 엔드포인트를 추가로 노출(공통값 오버라이드).
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway

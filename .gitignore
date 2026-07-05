@@ -1,0 +1,17 @@
+# ── 배포 시크릿 (절대 커밋 금지) ──
+deploy/.env
+.env
+
+# ── Gradle / 빌드 산출물 ──
+.gradle/
+**/build/
+backend/.gradle/
+
+# ── TeamCity Kotlin DSL 산출물 ──
+.teamcity/target/
+
+# ── IDE / OS ──
+.idea/
+*.iml
+.DS_Store
+Thumbs.db

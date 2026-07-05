@@ -1,0 +1,51 @@
+# =============================================================================
+# wms-server 전 서비스 공통 설정 (platform-server 의 Config native 백엔드가 모든 클라이언트에 병합)
+# 서비스별 설정은 같은 디렉토리의 {application-name}.yml 이 이 파일 위로 오버라이드한다.
+# 실제 자격증명/시크릿은 절대 커밋하지 않는다(public repo) — 환경변수로 주입.
+# =============================================================================
+
+# dev 기본 = localhost. 운영은 prod 프로파일(application-prod.yml)이 홈서버 IP 로 오버라이드한다.
+# Eureka 는 platform-server(config+discovery 통합, 19159)가 서빙한다 → config 와 동일 포트.
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:19159/eureka/}
+
+# JWT — 발급(master-service)·검증(gateway)이 동일 값을 공유해야 한다. 운영 값은 환경변수로 주입.
+jwt:
+  secret: ${JWT_SECRET:wms-local-dev-secret-please-change-in-production-0123456789}
+  issuer: ${JWT_ISSUER:wms}
+
+spring:
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      # (품목,로케이션) 단위 순서보장을 위해 key="{itemId}:{locationId}". consumer 는 멱등(idem:{movementId}).
+      auto-offset-reset: earliest
+    producer:
+      acks: all
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+  # JPA 공통 — JPA 를 안 쓰는 모듈(gateway)에서는 무시된다.
+  jpa:
+    hibernate:
+      ddl-auto: ${JPA_DDL_AUTO:update}
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+  # Flyway — db/migration 의 V__*.sql 적용. DataSource 가 없는 모듈에선 비활성.
+  flyway:
+    enabled: ${FLYWAY_ENABLED:true}
+    baseline-on-migrate: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
