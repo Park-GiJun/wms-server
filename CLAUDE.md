@@ -49,13 +49,13 @@ DB 는 미리 존재해야 한다.
 > **포트 정책:** 홈서버 다수 프로젝트 공존 → wms 는 **`191xx` 대역**을 쓴다
 > (ticket `180xx`, rally `188xx`, trading `189xx` 재사용 금지). 호스트 노출은 `gateway` 뿐.
 
-| 모듈 | 포트 | 역할 | 상시 |
-|------|------|------|------|
-| `platform-server` | 19159 | Config(native) + Eureka 통합 한 JVM. 자기 등록 안 함. 가장 먼저 기동 | O |
-| `gateway` | 19100 | 유일한 외부 진입점 + 단일 인증 지점(JWT 검증) + 라우팅 | O |
-| `shared` | — | 실행 불가 `java-library`. JwtTokenValidator·공통 응답/예외·`StockMovementEvent` | — |
-| `inventory-service` | 19101 | **★척추.** 재고원장(append-only)·재고/로케이션 투영·`stock.movement` 발행 | O |
-| `master-service` | 19102 | 품목·로케이션·거래처 마스터 + 신원/**JWT 발급** | O |
+| 모듈                  | 포트    | 역할                                                                    | 상시 |
+|---------------------|-------|-----------------------------------------------------------------------|----|
+| `platform-server`   | 19159 | Config(native) + Eureka 통합 한 JVM. 자기 등록 안 함. 가장 먼저 기동                 | O  |
+| `gateway`           | 19100 | 유일한 외부 진입점 + 단일 인증 지점(JWT 검증) + 라우팅                                   | O  |
+| `shared`            | —     | 실행 불가 `java-library`. JwtTokenValidator·공통 응답/예외·`StockMovementEvent` | —  |
+| `inventory-service` | 19101 | **★척추.** 재고원장(append-only)·재고/로케이션 투영·`stock.movement` 발행             | O  |
+| `master-service`    | 19102 | 품목·로케이션·거래처 마스터 + 신원/**JWT 발급**                                       | O  |
 
 모든 모듈은 패키지 루트 `com.gijun.wms` 를 공유한다(모듈이 달라도 같은 베이스 패키지).
 추가 피처(`inbound-service` / `outbound-service` …)는 `/new-service` 로 191xx 다음 포트에 붙인다.
