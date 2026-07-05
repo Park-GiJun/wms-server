@@ -25,6 +25,7 @@ project {
         "gateway",
         "master-service",
         "inventory-service",
+        "user-service",
     )
 
     backendServices.forEach { svc ->

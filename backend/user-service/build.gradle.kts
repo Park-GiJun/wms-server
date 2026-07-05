@@ -1,6 +1,7 @@
 plugins {
-    // 품목·로케이션·거래처 마스터. 헥사고날 + CQRS, DB-per-service → JPA.
-    // 신원(user)/JWT 발급은 user-service 소유 — 여기 두지 않는다.
+    // 신원(user) 마스터 + 인증. 헥사고날 + CQRS, DB-per-service → JPA.
+    // 신원 마스터를 소유하므로 이 서비스가 JWT 를 발급한다(검증은 gateway). 발급 책임을 옮기려면
+    // 아래 security-crypto/jjwt 런타임 의존성과 config-repo/user-service.yml 의 jwt 블록을 함께 이동.
     alias(libs.plugins.kotlin.spring)
     alias(libs.plugins.kotlin.jpa)
     alias(libs.plugins.springBoot)
@@ -28,7 +29,13 @@ dependencies {
     implementation(libs.kotlin.logging)
     implementation(project(":shared"))
 
-    // 마스터 변경 이벤트 발행(품목/로케이션 캐시 무효화 등) · read model/캐시.
+    // 비밀번호 해싱만 필요 — 풀 security 스타터 대신 crypto 모듈만 (필터 체인 없음).
+    implementation("org.springframework.security:spring-security-crypto")
+    // JWT 발급(서명)은 user(신원 소유) 책임. shared 는 api 만 노출하므로 impl/jackson 을 직접 런타임에 둔다.
+    runtimeOnly(libs.jjwt.impl)
+    runtimeOnly(libs.jjwt.jackson)
+
+    // 사용자 변경 이벤트 발행(권한 캐시 무효화 등) · read model/캐시.
     implementation("org.springframework.kafka:spring-kafka")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
 

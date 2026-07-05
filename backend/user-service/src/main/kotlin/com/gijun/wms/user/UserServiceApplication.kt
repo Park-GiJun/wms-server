@@ -1,18 +1,18 @@
-package com.gijun.wms.master
+package com.gijun.wms.user
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.boot.runApplication
 
 /**
- * 품목·로케이션·거래처 마스터. 헥사고날 + CQRS,
+ * 신원(user 마스터) + 인증 피처 서비스. 헥사고날 + CQRS,
  * DB-per-service(PostgreSQL, 스키마=Flyway).
- * 신원(user)/JWT 발급은 user-service 소유 — 이 서비스는 gateway 가 검증한 X-User-* 헤더를 신뢰한다.
+ * 신원 마스터를 소유하므로 **JWT 발급은 여기서**(검증은 gateway, shared 의 JwtTokenValidator 공유).
  */
 @ConfigurationPropertiesScan
 @SpringBootApplication
-class MasterServiceApplication
+class UserServiceApplication
 
 fun main(args: Array<String>) {
-    runApplication<MasterServiceApplication>(*args)
+    runApplication<UserServiceApplication>(*args)
 }

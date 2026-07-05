@@ -1,18 +1,14 @@
 # master-service 전용 설정 (공통 application.yml 위로 병합).
-# 품목·로케이션·거래처 마스터 + 신원(user) 소유. JWT 발급. DB-per-service.
+# 품목·로케이션·거래처 마스터. DB-per-service. (신원/JWT 발급은 user-service 로 분리.)
 server:
   port: 19102
 
 spring:
-  # dev 기본 = H2(PostgreSQL 호환 모드). 운영은 DB_URL/DB_USERNAME/DB_PASSWORD 로 PostgreSQL 주입.
+  # DB-per-service — 값은 .env/배포 환경변수로 주입. fallback 없음: 정보가 없으면 부팅 실패가 맞다.
   datasource:
-    url: ${DB_URL:jdbc:h2:mem:wms_master;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE}
-    username: ${DB_USERNAME:sa}
-    password: ${DB_PASSWORD:}
+    url: ${MASTER_DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
   kafka:
     consumer:
       group-id: ${KAFKA_GROUP_MASTER:wms-master}
-
-# 발급 토큰 유효시간(master-service 전용). secret/issuer 는 공통 application.yml 참조.
-jwt:
-  access-token-validity-minutes: ${JWT_VALIDITY_MINUTES:1440}
