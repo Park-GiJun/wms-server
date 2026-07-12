@@ -23,7 +23,7 @@ spring:
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     consumer:
-      # (품목,로케이션) 단위 순서보장을 위해 key="{itemId}:{locationId}". consumer 는 멱등(idem:{movementId}).
+      # (SKU,로케이션) 단위 순서보장을 위해 key="{skuId}:{locationId}". consumer 는 멱등(idem:{movementId}).
       auto-offset-reset: earliest
     producer:
       acks: all

@@ -3,6 +3,7 @@ package com.gijun.wms.master.application.handler.command
 import com.gijun.wms.master.application.dto.command.RecordAdjustmentCommand
 import com.gijun.wms.master.application.dto.command.RecordReceiptCommand
 import com.gijun.wms.master.application.dto.command.RecordTransferCommand
+import com.gijun.wms.master.application.port.out.message.PublishStockMovementPort
 import com.gijun.wms.master.application.port.out.persistence.item.ItemQueryPersistencePort
 import com.gijun.wms.master.application.port.out.persistence.location.LocationQueryPersistencePort
 import com.gijun.wms.master.application.port.out.persistence.stock.StockCommandPersistencePort
@@ -17,6 +18,7 @@ import com.gijun.wms.master.domain.stock.StockApplication
 import com.gijun.wms.master.domain.stock.StockBalanceModel
 import com.gijun.wms.master.domain.stock.StockMovementModel
 import com.gijun.wms.master.domain.stock.exception.StockException
+import com.gijun.wms.shared.event.StockMovementEvent
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -27,6 +29,7 @@ class StockCommandHandlerTest {
     private val activeSku = sku(id = 1, status = ItemStatus.ACTIVE)
     private val inactiveSku = sku(id = 2, status = ItemStatus.INACTIVE)
     private val stockPort = FakeStockPort()
+    private val publishPort = FakePublishPort()
     private val handler = StockCommandHandler(
         stockCommandPersistencePort = stockPort,
         itemQueryPersistencePort = FakeItemPort(mapOf(1L to activeSku, 2L to inactiveSku)),
@@ -37,6 +40,7 @@ class StockCommandHandlerTest {
                 30L to location(id = 30, status = LocationStatus.INACTIVE),
             ),
         ),
+        publishStockMovementPort = publishPort,
     )
 
     @Test
@@ -91,6 +95,19 @@ class StockCommandHandlerTest {
     }
 
     @Test
+    fun `transfer 는 이벤트를 출발지-도착지 순서로 2건 발행한다`() {
+        handler.receive(RecordReceiptCommand(skuId = 1, locationId = 20, qty = 5, refType = null, refId = null))
+        publishPort.published.clear()
+
+        handler.transfer(RecordTransferCommand(skuId = 1, fromLocationId = 20, toLocationId = 10, qty = 2, refType = null, refId = null))
+        assertEquals(2, publishPort.published.size)
+        assertEquals(-2, publishPort.published[0].qty)
+        assertEquals(20, publishPort.published[0].locationId)
+        assertEquals(2, publishPort.published[1].qty)
+        assertEquals(10, publishPort.published[1].locationId)
+    }
+
+    @Test
     fun `비활성 로케이션에서의 반출 transfer 는 허용한다`() {
         // 30(INACTIVE)에 실사 조정으로 재고를 만든 뒤 ACTIVE 로케이션으로 빼내는 시나리오.
         handler.adjust(RecordAdjustmentCommand(skuId = 1, locationId = 30, qtyDelta = 4, refType = null, refId = null))
@@ -125,6 +142,14 @@ class StockCommandHandlerTest {
         override fun persist(application: StockApplication): StockMovementModel {
             balances[application.balance.skuId to application.balance.locationId] = application.balance
             return application.movement.copy(id = nextId++)
+        }
+    }
+
+    /** 발행 이벤트를 기록만 하는 fake — 발행 건수·순서 검증용. */
+    private class FakePublishPort : PublishStockMovementPort {
+        val published = mutableListOf<StockMovementEvent>()
+        override fun publish(event: StockMovementEvent) {
+            published += event
         }
     }
 

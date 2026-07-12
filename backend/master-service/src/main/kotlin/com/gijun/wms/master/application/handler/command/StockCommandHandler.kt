@@ -8,6 +8,7 @@ import com.gijun.wms.master.application.dto.result.TransferResult
 import com.gijun.wms.master.application.port.`in`.command.RecordAdjustmentCommandUseCase
 import com.gijun.wms.master.application.port.`in`.command.RecordReceiptCommandUseCase
 import com.gijun.wms.master.application.port.`in`.command.RecordTransferCommandUseCase
+import com.gijun.wms.master.application.port.out.message.PublishStockMovementPort
 import com.gijun.wms.master.application.port.out.persistence.item.ItemQueryPersistencePort
 import com.gijun.wms.master.application.port.out.persistence.location.LocationQueryPersistencePort
 import com.gijun.wms.master.application.port.out.persistence.stock.StockCommandPersistencePort
@@ -16,7 +17,9 @@ import com.gijun.wms.master.domain.enums.LocationStatus
 import com.gijun.wms.master.domain.item.exception.ItemException
 import com.gijun.wms.master.domain.location.exception.LocationException
 import com.gijun.wms.master.domain.stock.StockLedger
+import com.gijun.wms.master.domain.stock.StockMovementModel
 import com.gijun.wms.master.domain.stock.exception.StockException
+import com.gijun.wms.shared.event.StockMovementEvent
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -32,6 +35,7 @@ class StockCommandHandler(
     private val stockCommandPersistencePort: StockCommandPersistencePort,
     private val itemQueryPersistencePort: ItemQueryPersistencePort,
     private val locationQueryPersistencePort: LocationQueryPersistencePort,
+    private val publishStockMovementPort: PublishStockMovementPort,
 ) : RecordReceiptCommandUseCase, RecordTransferCommandUseCase, RecordAdjustmentCommandUseCase {
 
     @Transactional
@@ -42,6 +46,7 @@ class StockCommandHandler(
         val balance = stockCommandPersistencePort.ensureAndLock(command.skuId, command.locationId)
         val applied = StockLedger.receive(balance, command.qty, command.refType, command.refId)
         val saved = stockCommandPersistencePort.persist(applied)
+        publishStockMovementPort.publish(saved.toEvent())
         return StockMovementResult.from(saved, applied.balance.qty)
     }
 
@@ -65,6 +70,8 @@ class StockCommandHandler(
         )
         val outbound = stockCommandPersistencePort.persist(applied.outbound)
         val inbound = stockCommandPersistencePort.persist(applied.inbound)
+        publishStockMovementPort.publish(outbound.toEvent())
+        publishStockMovementPort.publish(inbound.toEvent())
         return TransferResult(
             outbound = StockMovementResult.from(outbound, applied.outbound.balance.qty),
             inbound = StockMovementResult.from(inbound, applied.inbound.balance.qty),
@@ -80,6 +87,7 @@ class StockCommandHandler(
         val balance = stockCommandPersistencePort.ensureAndLock(command.skuId, command.locationId)
         val applied = StockLedger.adjust(balance, command.qtyDelta, command.refType, command.refId)
         val saved = stockCommandPersistencePort.persist(applied)
+        publishStockMovementPort.publish(saved.toEvent())
         return StockMovementResult.from(saved, applied.balance.qty)
     }
 
@@ -98,4 +106,17 @@ class StockCommandHandler(
             throw StockException.InactiveTargetException("로케이션 $locationId")
         }
     }
+
+    /** 저장된 movement(id 확정) → 척추 이벤트. movementId = 원장 PK 가 컨슈머의 멱등 키. */
+    private fun StockMovementModel.toEvent(): StockMovementEvent = StockMovementEvent(
+        movementId = requireNotNull(id).toString(),
+        skuId = skuId,
+        locationId = locationId,
+        type = type,
+        qty = qty,
+        refType = refType,
+        refId = refId,
+        seq = seq,
+        occurredAt = occurredAt,
+    )
 }

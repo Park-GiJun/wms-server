@@ -14,15 +14,15 @@ spring:
   kafka:
     consumer:
       group-id: ${KAFKA_GROUP_MASTER:wms-master}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
 # 발급 토큰 유효시간(신원 마스터 소유자 = 발급자). secret/issuer 는 공통 application.yml 참조.
 jwt:
   access-token-validity-minutes: ${JWT_VALIDITY_MINUTES:1440}
 
-# 재고/이동 규칙 (가정값). 도메인 설계에 맞게 채운다.
 inventory:
-  # stock.movement 토픽(발행) — key="{itemId}:{locationId}" 로 (품목,로케이션) 단위 순서보장.
+  # stock.movement 토픽(발행) — key="{skuId}:{locationId}" 로 (SKU,로케이션) 단위 순서보장.
   topic:
     stock-movement: ${TOPIC_STOCK_MOVEMENT:stock.movement}
-  # 음수재고 차단(오버피킹 방지). 조정(ADJUSTMENT)만 예외 허용.
-  allow-negative: false
