@@ -31,6 +31,11 @@ spring:
               uri: lb://inbound-service
               predicates:
                 - Path=/api/inbound/**
+            # 출고 → outbound-service
+            - id: outbound-core
+              uri: lb://outbound-service
+              predicates:
+                - Path=/api/outbound/**
             # ── 피처 추가 시 /new-service 가 여기에 라우트를 덧붙인다 ──
 
 # gateway 는 actuator 에 gateway 엔드포인트를 추가로 노출(공통값 오버라이드).

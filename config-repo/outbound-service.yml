@@ -1,0 +1,14 @@
+# outbound-service 전용 설정 (공통 application.yml 위로 병합).
+# 출고 피처 — 주문·피킹·패킹·출고(PICK/PACK/SHIP) 커맨드를 척추로 보낸다. DB-per-service.
+server:
+  port: 19106
+
+spring:
+  # DB-per-service — 값은 .env/배포 환경변수로 주입. fallback 없음: 정보가 없으면 부팅 실패가 맞다.
+  datasource:
+    url: ${OUTBOUND_DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  kafka:
+    consumer:
+      group-id: ${KAFKA_GROUP_OUTBOUND:wms-outbound}
