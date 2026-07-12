@@ -29,4 +29,8 @@ sealed class StockException(
     /** 비활성(INACTIVE) 대상으로의 재고 유입 시도 — 409. 반출·조정은 상태 불문 허용된다. */
     class InactiveTargetException(target: String) :
         StockException(ErrorCode.CONFLICT, "비활성 대상으로는 재고를 유입할 수 없습니다: $target")
+
+    /** 원장 이력 조회에 필터가 하나도 없음 — 400. 전체 원장 덤프를 막는다. */
+    class EmptyMovementFilterException :
+        StockException(ErrorCode.INVALID_INPUT, "skuId 또는 locationId 중 하나 이상을 지정해야 합니다.")
 }

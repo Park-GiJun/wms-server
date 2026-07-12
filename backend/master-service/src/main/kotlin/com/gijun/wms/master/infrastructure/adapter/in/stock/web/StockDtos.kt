@@ -1,5 +1,7 @@
 package com.gijun.wms.master.infrastructure.adapter.`in`.stock.web
 
+import com.gijun.wms.master.application.dto.result.StockBalanceResult
+import com.gijun.wms.master.application.dto.result.StockMovementHistoryResult
 import com.gijun.wms.master.application.dto.result.StockMovementResult
 import com.gijun.wms.master.application.dto.result.TransferResult
 import com.gijun.wms.shared.event.MovementType
@@ -78,6 +80,51 @@ data class TransferResponse(
         fun from(result: TransferResult): TransferResponse = TransferResponse(
             outbound = StockMovementResponse.from(result.outbound),
             inbound = StockMovementResponse.from(result.inbound),
+        )
+    }
+}
+
+data class StockBalanceResponse(
+    val skuId: Long,
+    val locationId: Long,
+    val qty: Long,
+    val lastSeq: Long,
+    val modifiedAt: Instant?,
+) {
+    companion object {
+        fun from(result: StockBalanceResult): StockBalanceResponse = StockBalanceResponse(
+            skuId = result.skuId,
+            locationId = result.locationId,
+            qty = result.qty,
+            lastSeq = result.lastSeq,
+            modifiedAt = result.modifiedAt,
+        )
+    }
+}
+
+/** 원장 이력 1건 응답 — 커맨드 응답과 달리 balanceQty 없음. */
+data class StockMovementHistoryResponse(
+    val id: Long,
+    val skuId: Long,
+    val locationId: Long,
+    val type: MovementType,
+    val qty: Long,
+    val refType: String?,
+    val refId: String?,
+    val seq: Long,
+    val occurredAt: Instant,
+) {
+    companion object {
+        fun from(result: StockMovementHistoryResult): StockMovementHistoryResponse = StockMovementHistoryResponse(
+            id = result.id,
+            skuId = result.skuId,
+            locationId = result.locationId,
+            type = result.type,
+            qty = result.qty,
+            refType = result.refType,
+            refId = result.refId,
+            seq = result.seq,
+            occurredAt = result.occurredAt,
         )
     }
 }

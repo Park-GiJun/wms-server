@@ -9,6 +9,10 @@ import org.springframework.data.repository.query.Param
 
 interface StockBalanceJpaRepository : JpaRepository<StockBalanceJpaEntity, StockBalanceId> {
 
+    // 복합 PK(@EmbeddedId) 내부 필드 탐색이라 property path 는 id.skuId / id.locationId.
+    fun findByIdSkuId(skuId: Long): List<StockBalanceJpaEntity>
+    fun findByIdLocationId(locationId: Long): List<StockBalanceJpaEntity>
+
     /** (sku, location) 잔고 행을 SELECT ... FOR UPDATE 로 잠근다 — 단일 라이터의 실체. */
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT b FROM StockBalanceJpaEntity b WHERE b.id = :id")
