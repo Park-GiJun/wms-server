@@ -16,11 +16,11 @@ spring:
               uri: lb://master-service
               predicates:
                 - Path=/api/auth/**,/api/users/**
-            # 재고 조회 · 재고이동(척추) + 품목/로케이션/거래처 마스터 → master-service
+            # 재고 조회 · 재고이동(척추) + 상품/SKU·로케이션·거래처 마스터 → master-service
             - id: master-core
               uri: lb://master-service
               predicates:
-                - Path=/api/inventory/**,/api/stock-movements/**,/api/items/**,/api/locations/**,/api/partners/**
+                - Path=/api/inventory/**,/api/stock-movements/**,/api/products/**,/api/skus/**,/api/locations/**,/api/partners/**
             # 알림 → notification-service
             - id: notification-core
               uri: lb://notification-service
