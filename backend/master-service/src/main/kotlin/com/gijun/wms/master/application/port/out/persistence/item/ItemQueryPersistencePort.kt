@@ -9,6 +9,7 @@ interface ItemQueryPersistencePort {
     fun findProductById(id: Long): ProductModel?
     fun findProducts(status: ItemStatus?): List<ProductModel>
     fun findSkusByProductId(productId: Long): List<SkuModel>
+    fun findSkuById(id: Long): SkuModel?
     fun existsSkuByCode(skuCode: String): Boolean
     fun existsSkuByBarcode(barcode: String): Boolean
     fun findSkuByCode(skuCode: String): SkuModel?
