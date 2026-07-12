@@ -12,3 +12,10 @@ spring:
   kafka:
     consumer:
       group-id: ${KAFKA_GROUP_NOTIFICATION:wms-notification}
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        # 발행자의 타입 헤더 대신 default.type 으로 고정 역직렬화 — 서비스 간 패키지 결합 최소화.
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: com.gijun.wms.shared.event.StockMovementEvent
+        spring.json.trusted.packages: com.gijun.wms.shared.event
