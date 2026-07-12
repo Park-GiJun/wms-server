@@ -26,11 +26,12 @@ spring:
               uri: lb://notification-service
               predicates:
                 - Path=/api/notifications/**
+            # 입고 → inbound-service
+            - id: inbound-core
+              uri: lb://inbound-service
+              predicates:
+                - Path=/api/inbound/**
             # ── 피처 추가 시 /new-service 가 여기에 라우트를 덧붙인다 ──
-            # - id: inbound-core
-            #   uri: lb://inbound-service
-            #   predicates:
-            #     - Path=/api/inbound/**
 
 # gateway 는 actuator 에 gateway 엔드포인트를 추가로 노출(공통값 오버라이드).
 management:

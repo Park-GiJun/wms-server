@@ -1,0 +1,14 @@
+# inbound-service 전용 설정 (공통 application.yml 위로 병합).
+# 입고 피처 — 입고지시·검수 후 RECEIPT/PUTAWAY 커맨드를 척추로 보낸다. DB-per-service.
+server:
+  port: 19105
+
+spring:
+  # DB-per-service — 값은 .env/배포 환경변수로 주입. fallback 없음: 정보가 없으면 부팅 실패가 맞다.
+  datasource:
+    url: ${INBOUND_DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  kafka:
+    consumer:
+      group-id: ${KAFKA_GROUP_INBOUND:wms-inbound}
